@@ -2,8 +2,32 @@ body {
   margin: 0;
   background-color: #181644;
   overflow: hidden;
-  background: radial-gradient(#5dfffc 0%, #086ad4 50%, #000023 100%);
   font-family: Vazirmatn, Tahoma, Arial, sans-serif;
+  background: radial-gradient(#86fffd 0%, #2e81d9 50%, #280367 110%);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../images/bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  /* opacity: 0.9; */
+  mix-blend-mode: overlay;
+  z-index: -1;
+}
+.overlay h1 {
+  font-size: 30px;
+  font-weight: 900;
+  color: white;
+  text-align: center;
+  text-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
 canvas {
@@ -12,11 +36,12 @@ canvas {
   -ms-touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   pointer-events: auto;
+  z-index: 999;
 }
 
 #info {
   position: fixed;
-  top: 10px;
+  top: 10%;
   right: 10px;
   background-color: rgba(169, 169, 169, 0.7);
   color: white;
@@ -30,15 +55,16 @@ body {
   font-family: Vazirmatn, sans-serif;
 }
 #throwButton {
-  position: fixed;
-  bottom: calc(16px + env(safe-area-inset-bottom));
+  position: absolute;
+  bottom: calc(10vw + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   padding: 12px 24px;
   font-family: Vazirmatn, sans-serif;
   font-size: 16px;
-  background-color: #d50f7f;
-  color: white;
+  font-weight: 900;
+  background-color: rgb(90, 254, 254);
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 2rem;
   cursor: pointer;
@@ -49,16 +75,26 @@ body {
   touch-action: manipulation;
   -webkit-touch-callout: none;
   user-select: none;
+  mix-blend-mode:hard-light;
   -webkit-user-select: none;
+  box-shadow: 0 0 10px #0ff, 0 0 40px #0fff, 0 0 80px #0fff;
+  animation: hueMove 10s linear infinite;
 }
-#throwButton:hover {
-  background-color: #0ecfff;
+
+#throwButton:active {
+  background-color: #a4ffeb;
+  color: #ccccce;
+  transition: 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+@keyframes hueMove {
+  0%   { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
 }
 #info {
   position: fixed;
-  top: 20px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(550%);
   color: white;
   font-size: 24px;
   text-align: center;
@@ -67,17 +103,20 @@ body {
 }
 @media (max-width: 768px) {
   #throwButton {
-    width: 80%;
+    width: 40%;
     font-size: 18px;
   }
   #info {
     font-size: 18px;
-    top: calc(12px + env(safe-area-inset-top));
+    top: calc(100px + env(safe-area-inset-top));
   }
 }
 
 /* جلوگیری از انتخاب تصادفی متن و رفتارهای پیش‌فرض در موبایل */
-body, #throwButton, #info, canvas {
+body,
+#throwButton,
+#info,
+canvas {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
