@@ -570,7 +570,8 @@ async function init() {
           clearcoat: 0.9,
           clearcoatRoughness: 0.2,
           side: THREE.DoubleSide,
-          envMapIntensity: 0.1
+          envMapIntensity: 0.1,
+          depthWrite: false
         });
         const hemisphere = new THREE.Mesh(
           hemisphereGeometry,
@@ -579,9 +580,68 @@ async function init() {
         hemisphere.position.set(0, size.y - 5 - center.y, 0);
         hemisphere.castShadow = false;
         hemisphere.receiveShadow = true;
+        hemisphere.renderOrder = 2;
         kafPivot.add(hemisphere);
         // برای انتخاب با ری‌کستر هم قابل کلیک باشد
         kafMeshes.push(hemisphere);
+
+        // افزودن تابلوی افقی name.png متصل به KAF
+        (function addNamePlate() {
+          const texLoader = new THREE.TextureLoader();
+          texLoader.load(
+            'images/name.png',
+            (texture) => {
+              // تطبیق با خروجی sRGB و کیفیت بهتر فیلترینگ
+              if (texture.encoding !== undefined && THREE.sRGBEncoding) {
+                texture.encoding = THREE.sRGBEncoding;
+              }
+              try {
+                let maxAniso = 8;
+                if (renderer.capabilities && typeof renderer.capabilities.getMaxAnisotropy === 'function') {
+                  maxAniso = renderer.capabilities.getMaxAnisotropy();
+                }
+                texture.anisotropy = maxAniso || 8;
+              } catch (e) {
+                texture.anisotropy = 8;
+              }
+
+              const imgW = texture.image?.width || 1024;
+              const imgH = texture.image?.height || 512;
+              const aspect = imgW / imgH;
+
+              // عرض نسبی نسبت به ابعاد KAF و حفظ نسبت تصویر
+              const plateMaxWidth = Math.max(0.2, size.x * 0.8);
+              const plateWidth = plateMaxWidth;
+              const plateHeight = plateWidth / Math.max(0.1, aspect);
+
+              const geom = new THREE.PlaneGeometry(plateWidth, plateHeight);
+              const mat = new THREE.MeshBasicMaterial({
+                map: texture,
+                transparent: true,
+                side: THREE.DoubleSide,
+                depthWrite: false
+              });
+              const plate = new THREE.Mesh(geom, mat);
+
+              // افقی بودن صفحه (نرمال رو به بالا)
+              plate.rotation.x = -Math.PI / 2;
+              plate.rotation.z = -Math.PI / 4;
+
+              // کمی بالاتر از سطح بالایی KAF و متصل به پیوِت
+              const yOffset = Math.max(0.4, size.y * 0.01);
+              plate.position.set(0, (size.y / 2) + yOffset, 0);
+
+              // با KAF یکپارچه شود (با چرخش/جابجایی KAF حرکت کند)
+              plate.renderOrder = 1;
+              kafPivot.add(plate);
+              // اگر نیاز به انتخاب‌پذیری داشت: kafMeshes.push(plate);
+            },
+            undefined,
+            (err) => {
+              console.warn('خطا در بارگذاری images/name.png:', err);
+            }
+          );
+        })();
 
         // اضافه کردن فیزیک برای محفظه شیشه‌ای
         const segments = 16;
