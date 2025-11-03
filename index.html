@@ -7,8 +7,19 @@
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
 
     <link rel="stylesheet" href="css/style.css">
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+        }
+      }
+    </script>
 </head>
 <body>
+    <!-- WebGL background container (purely decorative) -->
+    <div class="webgl"></div>
     <button id="throwButton">پرتاب</button>
     <div class="overlay">
         <h1>صورت‌های فضایی</h1>
@@ -32,5 +43,7 @@
         });
     </script>
     <script src="js/main.js"></script>
+    <!-- Background effect module (no buttons, background only) -->
+    <script type="module" src="js/space-bg.js"></script>
 </body>
 </html>

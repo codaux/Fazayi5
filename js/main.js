@@ -121,12 +121,16 @@ async function init() {
     directionalLight.shadow.bias = -0.0001;
     scene.add(directionalLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
-    fillLight.position.set(-5, 3, -5);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    fillLight.position.set(-5, 6, -5);
     scene.add(fillLight);
+    
+    const fillLight2 = new THREE.DirectionalLight(0xffff00, 0.8);
+    fillLight2.position.set(50, 3, -20);
+    scene.add(fillLight2);
 
-    const bottomLight = new THREE.PointLight(0xff00ff, 0.2, 100);
-    bottomLight.position.set(1, -3, 1);
+    const bottomLight = new THREE.PointLight(0xff00ff, 0.9, 100);
+    bottomLight.position.set(0, -5, 50);
     scene.add(bottomLight);
 
     // متغیرهای جهانی
@@ -160,7 +164,7 @@ async function init() {
     let gravityArrow = null; // محور رنگی گرانش
     let gyroGravityActive = false; // اعمال گرانش وابسته به ژیروسکوپ پس از پرتاب
     const lastGravityVec = new THREE.Vector3(0, 0, 0); // آخرین بردار گرانش محاسبه‌شده
-    const BASE_GRAVITY = 50; // شدت گرانش یکسان در دسکتاپ و موبایل
+    const BASE_GRAVITY = 100; // شدت گرانش یکسان در دسکتاپ و موبایل
 
     // تابع بررسی پشتیبانی از ژیروسکوپ (روش سنتی)
     function checkGyroSupport() {
@@ -463,10 +467,10 @@ async function init() {
             child.castShadow = true;
             child.receiveShadow = true;
             child.material = new THREE.MeshPhysicalMaterial({
-              color: 0xdd4400,
-              metalness: 0.4,
+              color:0x9f1a11,
+              metalness: 0.9,
               roughness: 0.5,
-              clearcoat: 0.3,
+              clearcoat: 0.1,
               clearcoatRoughness: 0.8,
               side: THREE.DoubleSide,
               transparent: true,
@@ -560,13 +564,13 @@ async function init() {
         const hemisphereMaterial = new THREE.MeshPhysicalMaterial({
           color: 0xf0fdff,
           transparent: true,
-          opacity: 0.25,
-          roughness: 0.35,
-          metalness: 0.95,
-          clearcoat: 0.1,
-          clearcoatRoughness: 0.9,
+          opacity: 0.35,
+          roughness: 0.25,
+          metalness: 0.85,
+          clearcoat: 0.9,
+          clearcoatRoughness: 0.2,
           side: THREE.DoubleSide,
-          envMapIntensity: 0.5
+          envMapIntensity: 0.1
         });
         const hemisphere = new THREE.Mesh(
           hemisphereGeometry,
