@@ -154,6 +154,9 @@ async function init() {
     let returnDuration = 0.9; // ثانیه
     const returnStartQuat = new THREE.Quaternion();
     const colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff];
+    const isIOSDevice =
+      /iPad|iPhone|iPod/.test(navigator.userAgent || navigator.vendor || window.opera) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
     // متغیرهای ژیروسکوپ
     let gyroEnabled = false;
@@ -165,6 +168,7 @@ async function init() {
     let gyroGravityActive = false; // اعمال گرانش وابسته به ژیروسکوپ پس از پرتاب
     const lastGravityVec = new THREE.Vector3(0, 0, 0); // آخرین بردار گرانش محاسبه‌شده
     const BASE_GRAVITY = 150; // شدت گرانش یکسان در دسکتاپ و موبایل
+    let iosPermissionListenerAttached = false;
 
     // تابع بررسی پشتیبانی از ژیروسکوپ (روش سنتی)
     function checkGyroSupport() {
@@ -215,6 +219,11 @@ async function init() {
 
     // تابع فعال‌سازی ژیروسکوپ (روش سنتی)
     async function enableGyroscope() {
+      if (gyroEnabled) {
+        console.log('ژیروسکوپ قبلاً فعال شده است');
+        return true;
+      }
+
       if (!checkGyroSupport()) {
         console.log('ژیروسکوپ پشتیبانی نمی‌شود');
         if (!isMobile) {
@@ -224,7 +233,7 @@ async function init() {
       }
 
       // بررسی HTTPS فقط برای iOS
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      const isIOS = isIOSDevice;
       if (isIOS && location.protocol !== 'https:' && location.hostname !== 'localhost') {
         console.log('ژیروسکوپ نیاز به HTTPS دارد');
         if (!isMobile) {
@@ -265,6 +274,36 @@ async function init() {
           gyroEnabled = true;
         }
       }
+    }
+
+    // فعال‌سازی مبتنی بر تعامل کاربر برای iOS
+    function setupIOSGyroPermissionHandler() {
+      if (!isIOSDevice || gyroEnabled || iosPermissionListenerAttached) {
+        return;
+      }
+
+      const userInteractionHandler = async () => {
+        removeIOSPermissionHandlers();
+        const success = await enableGyroscope();
+        if (!success) {
+          iosPermissionListenerAttached = false;
+          setupIOSGyroPermissionHandler();
+        }
+      };
+
+      function removeIOSPermissionHandlers() {
+        window.removeEventListener('touchstart', userInteractionHandler);
+        window.removeEventListener('touchend', userInteractionHandler);
+        window.removeEventListener('pointerdown', userInteractionHandler);
+        window.removeEventListener('click', userInteractionHandler);
+      }
+
+      window.addEventListener('touchstart', userInteractionHandler, { passive: true });
+      window.addEventListener('touchend', userInteractionHandler, { passive: true });
+      window.addEventListener('pointerdown', userInteractionHandler, { passive: true });
+      window.addEventListener('click', userInteractionHandler);
+      iosPermissionListenerAttached = true;
+      console.log('در انتظار تعامل کاربر برای فعال‌سازی ژیروسکوپ در iOS');
     }
 
     // تابع شبیه‌سازی ژیروسکوپ برای HTTP
@@ -732,6 +771,7 @@ async function init() {
 
         // تشخیص موبایل
         detectMobile();
+        setupIOSGyroPermissionHandler();
 
         // ایجاد محور گرانش
         createGravityArrow();
