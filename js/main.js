@@ -164,7 +164,7 @@ async function init() {
     let gravityArrow = null; // محور رنگی گرانش
     let gyroGravityActive = false; // اعمال گرانش وابسته به ژیروسکوپ پس از پرتاب
     const lastGravityVec = new THREE.Vector3(0, 0, 0); // آخرین بردار گرانش محاسبه‌شده
-    const BASE_GRAVITY = 100; // شدت گرانش یکسان در دسکتاپ و موبایل
+    const BASE_GRAVITY = 150; // شدت گرانش یکسان در دسکتاپ و موبایل
 
     // تابع بررسی پشتیبانی از ژیروسکوپ (روش سنتی)
     function checkGyroSupport() {
